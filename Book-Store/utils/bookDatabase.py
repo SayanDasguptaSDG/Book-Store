@@ -12,7 +12,10 @@ def createBook():
 def addBook(title, author, year):
     with dbConnection('data.db') as connection:
         cursor = connection.cursor()
-        cursor.execute('INSERT INTO books VALUES(?, ?, ?)', (title, author, year))
+        try:
+            cursor.execute('INSERT INTO books VALUES(?, ?, ?)', (title, author, year))
+        except:
+            print("Book is already available")
 
 
 # displaying all the books from the database
@@ -76,12 +79,14 @@ def updateBook(searchedBook, ch):
     with dbConnection('data.db') as connection:
         cursor = connection.cursor()
         if ch == "T":
-            cursor.execute('UPDATE books SET title=? WHERE title=?', (input("Enter the desired title : "), searchedBook,))
+            cursor.execute('UPDATE books SET title=? WHERE title=?',
+                           (input("Enter the desired title : "), searchedBook,))
         elif ch == "A":
-            cursor.execute('UPDATE books SET author=? WHERE title=?', (input("Enter the desired author : "), searchedBook,))
+            cursor.execute('UPDATE books SET author=? WHERE title=?',
+                           (input("Enter the desired author : "), searchedBook,))
         elif ch == "Y":
             cursor.execute('UPDATE books SET year=? WHERE title=?',
-                         (input("Enter the desired publishing year : "), searchedBook,))
+                           (input("Enter the desired publishing year : "), searchedBook,))
         else:
             print("Wrong choice")
         print(f"Book titled {searchedBook} is updated....")
