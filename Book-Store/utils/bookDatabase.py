@@ -5,7 +5,16 @@ from .dbConnection import dbConnection
 def createBook():
     with dbConnection('data.db') as connection:
         cursor = connection.cursor()
-        cursor.execute("CREATE TABLE IF NOT EXISTS books (title text primary key, author text, year integer)")
+        cursor.execute("CREATE TABLE IF NOT EXISTS books (title VARCHAR(50) primary key, author VARCHAR(25), year INTEGER(4))")
+
+
+# check if database is empty
+def checkDbEmpty():
+    books = get_all_books()
+    if len(books) == 0:
+        return "Please add some books first."
+    else:
+        return "false"
 
 
 # adding a book into the database
@@ -32,10 +41,14 @@ def get_all_books():
 
 # deleting a book from the database
 def deleteBook(title):
-    with dbConnection('data.db') as connection:
-        cursor = connection.cursor()
-        cursor.execute('DELETE FROM books WHERE title =?', (title,))
-    print(f"{title} is deleted....")
+    books = searchBookByTitle(title)
+    if len(books) == 0:
+        print("Mentioned book is not present")
+    else:
+        with dbConnection('data.db') as connection:
+            cursor = connection.cursor()
+            cursor.execute('DELETE FROM books WHERE title =?', (title,))
+            print(f"{title} is deleted....")
 
 
 # searching a book by title
@@ -47,7 +60,10 @@ def searchBookByTitle(searchedTitle):
                   'author': row[1],
                   'year': row[2]}
                  for row in cursor.fetchall()]
-    return books
+        if len(books) == 0:
+            return []
+        else:
+            return books
 
 
 # searching a book by author
@@ -59,7 +75,10 @@ def searchBookByAuthor(searchedAuthor):
                   'author': row[1],
                   'year': row[2]}
                  for row in cursor.fetchall()]
-    return books
+        if len(books) == 0:
+            return []
+        else:
+            return books
 
 
 # searching a book by year
@@ -71,7 +90,10 @@ def searchBookByYear(searchedYear):
                   'author': row[1],
                   'year': row[2]}
                  for row in cursor.fetchall()]
-    return books
+        if len(books) == 0:
+            return []
+        else:
+            return books
 
 
 # updating a book into the database
