@@ -7,13 +7,13 @@ from utils import bookDatabase
 # user menu
 def userMenu():
     print("===============================================")
-    menu = input("""A for adding a book,
-R for reading a book,
-D for deleting a book,
-U for updating a book,
-S for searching a book,
-Q for quitting the menu.
-Enter your choice : """).upper()
+    menu = input("""Add - adding a book,
+List - list all the books,
+Delete - deleting a book,
+Updating - updating a book,
+Searching - searching a book,
+Quit - quitting the menu.
+Enter your choice : """).lower()
     return menu
 
 
@@ -21,10 +21,10 @@ Enter your choice : """).upper()
 def updateByMenu():
     print("===============================================")
     ch = input("""What do you want to update? 
-T for title, 
-A for author, 
-Y for year, 
-N for nothing : """).upper()
+Title - update the title, 
+Author - update the author, 
+Year - update the publishing year.
+Enter your choice: """).lower()
     return ch
 
 
@@ -32,11 +32,10 @@ N for nothing : """).upper()
 def searchMenu():
     print("===============================================")
     ch = input("""How would you like to search?
-T for title
-A for author
-Y for publishing year
-N for nothing.
-Enter your choice : """).upper()
+Title - search by title
+Author - search by author
+Year - search by publishing year
+Enter your choice : """).lower()
     return ch
 
 
@@ -48,19 +47,20 @@ def menu():
     # accept user choice
     choice = userMenu()
     # exit condition
-    while choice != "Q":
-        if choice == "A":
+    while choice != "quit":
+        if choice == "add":
             addBookPrompt()
-        elif choice == "R":
+        elif choice == "list":
             listAllBooks()
-        elif choice == "S":
+        elif choice == "search":
             searchPrompt()
-        elif choice == "D":
+        elif choice == "delete":
             deleteBookPrompt()
-        elif choice == "U":
+        elif choice == "update":
             updateBookPrompt()
         else:
-            print("Something wrong")
+            print("===============================================")
+            print("Something went wrong.")
         choice = userMenu()
 
 
@@ -97,9 +97,11 @@ def addBookPrompt():
         if count == 4:
             bookDatabase.addBook(title, author, year)
         else:
-            print("Year must be a four digit number")
+            print("===============================================")
+            print("Year must be a four digit number.")
     except ValueError:
-        print("Year must be numeric")
+        print("===============================================")
+        print("Year must be numeric.")
 
 
 # prompt for deleting a book from the database
@@ -115,43 +117,44 @@ def deleteBookPrompt():
 
 # prompt for searching the book in the database
 def searchPrompt():
-    print("===============================================")
     check = bookDatabase.checkDbEmpty()
     if check == "false":
-        if len(bookDatabase.get_all_books()) == 0:
-            print("===============================================")
-            print("Please add some books first.")
-        else:
-            ch = searchMenu()
-            if ch == "T":
-                searchedTitle = input("Search by title : ")
-                books = bookDatabase.searchBookByTitle(searchedTitle)
-                if len(books) == 0:
-                    print("Mentioned book is not present")
-                else:
-                    for i in books:
-                        print(f"{i['title']} by {i['author']} - {i['year']}")
-            elif ch == "A":
-                searchedAuthor = input("Search by author : ")
-                books = bookDatabase.searchBookByAuthor(searchedAuthor)
-                if len(books) == 0:
-                    print("Books from mentioned author is not present")
-                else:
-                    for i in books:
-                        print(f"\{i['title']} by {i['author']} - {i['year']}")
-            elif ch == "Y":
-                searchedYear = input("Search by publishing year : ")
-                books = bookDatabase.searchBookByYear(searchedYear)
-                if len(books) == 0:
-                    print("Books published in mentioned year is not present")
-                else:
-                    for i in books:
-                        print(f"{i['title']} by {i['author']} - {i['year']}")
-            elif ch == "N":
-                pass
+        ch = searchMenu()
+        print("===============================================")
+        if ch == "title":
+            searchedTitle = input("Search by title : ")
+            books = bookDatabase.searchBookByTitle(searchedTitle)
+            if len(books) == 0:
+                print("===============================================")
+                print("Mentioned book is not present.")
             else:
-                print("Wrong choice")
+                print("===============================================")
+                for i in books:
+                    print(f"{i['title']} by {i['author']} - {i['year']}")
+        elif ch == "author":
+            searchedAuthor = input("Search by author : ")
+            books = bookDatabase.searchBookByAuthor(searchedAuthor)
+            if len(books) == 0:
+                print("===============================================")
+                print("Books from mentioned author is not present.")
+            else:
+                print("===============================================")
+                for i in books:
+                    print(f"{i['title']} by {i['author']} - {i['year']}")
+        elif ch == "year":
+            searchedYear = input("Search by publishing year : ")
+            books = bookDatabase.searchBookByYear(searchedYear)
+            if len(books) == 0:
+                print("===============================================")
+                print("Books published in mentioned year is not present.")
+            else:
+                print("===============================================")
+                for i in books:
+                    print(f"{i['title']} by {i['author']} - {i['year']}")
+        else:
+            print("Please select from the above choices only.\nReturning back to menu.")
     else:
+        print("===============================================")
         print(check)
 
 
@@ -162,7 +165,8 @@ def updateBookPrompt():
     if check == "false":
         searchedBook = input("Which book needs to be updated? : ")
         if len(bookDatabase.searchBookByTitle(searchedBook)) == 0:
-            print("Mentioned book is not found")
+            print("===============================================")
+            print("Mentioned book is not found.")
         else:
             ch = updateByMenu()
             bookDatabase.updateBook(searchedBook, ch)
