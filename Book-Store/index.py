@@ -1,4 +1,5 @@
 from utils import bookDatabase
+import re
 
 
 ######################################## MENUS ########################################
@@ -6,7 +7,7 @@ from utils import bookDatabase
 
 # user menu
 def userMenu():
-    print("===============================================")
+    print("================================================================================")
     menu = input("""Add - adding a book,
 List - list all the books,
 Delete - deleting a book,
@@ -19,10 +20,10 @@ Enter your choice : """).lower()
 
 # update menu
 def updateByMenu():
-    print("===============================================")
-    ch = input("""What do you want to update? 
-Title - update the title, 
-Author - update the author, 
+    print("================================================================================")
+    ch = input("""What do you want to update?
+Title - update the title,
+Author - update the author,
 Year - update the publishing year.
 Enter your choice: """).lower()
     return ch
@@ -30,7 +31,7 @@ Enter your choice: """).lower()
 
 # search menu
 def searchMenu():
-    print("===============================================")
+    print("================================================================================")
     ch = input("""How would you like to search?
 Title - search by title
 Author - search by author
@@ -59,7 +60,7 @@ def menu():
         elif choice == "update":
             updateBookPrompt()
         else:
-            print("===============================================")
+            print("================================================================================")
             print("Something went wrong.")
         choice = userMenu()
 
@@ -76,9 +77,30 @@ def countDigits(year):
     return count
 
 
+# valid title or not
+def isValidTitle(title):
+    if any(a.isalpha() for a in title) and \
+            all(t.isalpha() or t.isspace() or
+                t.isdigit() for t in title) and \
+            title.startswith(' ') != True and title.endswith(' ') != True:
+        return True
+    else:
+        return False
+
+
+# valid author or not
+def isValidAuthor(author):
+    if any(a.isalpha() for a in author) and \
+            all(a.isalpha() or a.isspace() for a in author) \
+            and author.startswith(' ') != True and author.endswith(' ') != True:
+        return True
+    else:
+        return False
+
+
 # display all books
 def listAllBooks():
-    print("===============================================")
+    print("================================================================================")
     if len(bookDatabase.get_all_books()) == 0:
         print("Please add some books first.")
     else:
@@ -88,25 +110,31 @@ def listAllBooks():
 
 # prompt for adding a book into the database
 def addBookPrompt():
-    print("===============================================")
+    print("================================================================================")
     try:
         title = input("Enter book title : ")
         author = input("Enter author name : ")
         year = int(input("Enter publishing year : "))
         count = int(countDigits(year))
-        if count == 4:
+        titleValidation = isValidTitle(title)
+        authorValidation = isValidAuthor(author)
+        if count == 4 and titleValidation and authorValidation:
             bookDatabase.addBook(title, author, year)
         else:
-            print("===============================================")
-            print("Year must be a four digit number.")
+            print("================================================================================")
+            print("""Incompatible entries.
+Title cannot be empty.
+Title cannot start or end with a space and cannot end with a space.
+Author cannot contain any numeric character
+Author cannot start and end with a space.""")
     except ValueError:
-        print("===============================================")
+        print("================================================================================")
         print("Year must be numeric.")
 
 
 # prompt for deleting a book from the database
 def deleteBookPrompt():
-    print("===============================================")
+    print("================================================================================")
     check = bookDatabase.checkDbEmpty()
     if check == "false":
         book = input("Which book do you want to delete? : ")
@@ -120,52 +148,52 @@ def searchPrompt():
     check = bookDatabase.checkDbEmpty()
     if check == "false":
         ch = searchMenu()
-        print("===============================================")
+        print("================================================================================")
         if ch == "title":
             searchedTitle = input("Search by title : ")
             books = bookDatabase.searchBookByTitle(searchedTitle)
             if len(books) == 0:
-                print("===============================================")
+                print("================================================================================")
                 print("Mentioned book is not present.")
             else:
-                print("===============================================")
+                print("================================================================================")
                 for i in books:
                     print(f"{i['title']} by {i['author']} - {i['year']}")
         elif ch == "author":
             searchedAuthor = input("Search by author : ")
             books = bookDatabase.searchBookByAuthor(searchedAuthor)
             if len(books) == 0:
-                print("===============================================")
+                print("================================================================================")
                 print("Books from mentioned author is not present.")
             else:
-                print("===============================================")
+                print("================================================================================")
                 for i in books:
                     print(f"{i['title']} by {i['author']} - {i['year']}")
         elif ch == "year":
             searchedYear = input("Search by publishing year : ")
             books = bookDatabase.searchBookByYear(searchedYear)
             if len(books) == 0:
-                print("===============================================")
+                print("================================================================================")
                 print("Books published in mentioned year is not present.")
             else:
-                print("===============================================")
+                print("================================================================================")
                 for i in books:
                     print(f"{i['title']} by {i['author']} - {i['year']}")
         else:
             print("Please select from the above choices only.\nReturning back to menu.")
     else:
-        print("===============================================")
+        print("================================================================================")
         print(check)
 
 
 # prompt for updating the values into the database
 def updateBookPrompt():
-    print("===============================================")
+    print("================================================================================")
     check = bookDatabase.checkDbEmpty()
     if check == "false":
         searchedBook = input("Which book needs to be updated? : ")
         if len(bookDatabase.searchBookByTitle(searchedBook)) == 0:
-            print("===============================================")
+            print("================================================================================")
             print("Mentioned book is not found.")
         else:
             ch = updateByMenu()

@@ -5,7 +5,8 @@ from .dbConnection import dbConnection
 def createBook():
     with dbConnection('data.db') as connection:
         cursor = connection.cursor()
-        cursor.execute("CREATE TABLE IF NOT EXISTS books (title VARCHAR(50) NOT NULL primary key, author VARCHAR(25), year INTEGER(4))")
+        cursor.execute(
+            "CREATE TABLE IF NOT EXISTS books (title VARCHAR(50) NOT NULL primary key, author VARCHAR(25), year INTEGER(4))")
 
 
 # check if database is empty
@@ -23,10 +24,10 @@ def addBook(title, author, year):
         cursor = connection.cursor()
         try:
             cursor.execute('INSERT INTO books VALUES(?, ?, ?)', (title, author, year))
-            print("===============================================")
+            print("================================================================================")
             print(f'{title} is added.')
         except:
-            print("===============================================")
+            print("================================================================================")
             print(f'{title} is already available.')
 
 
@@ -46,13 +47,13 @@ def get_all_books():
 def deleteBook(title):
     books = searchBookByTitle(title)
     if len(books) == 0:
-        print("===============================================")
+        print("================================================================================")
         print("Mentioned book is not present.")
     else:
         with dbConnection('data.db') as connection:
             cursor = connection.cursor()
             cursor.execute('DELETE FROM books WHERE title =?', (title,))
-            print("===============================================")
+            print("================================================================================")
             print(f"{title} is deleted.")
 
 
@@ -108,18 +109,18 @@ def updateBook(searchedBook, ch):
         if ch == "title":
             cursor.execute('UPDATE books SET title=? WHERE title=?',
                            (input("Enter the desired title : "), searchedBook,))
-            print("===============================================")
+            print("================================================================================")
             print(f"Book titled {searchedBook} is updated.")
         elif ch == "author":
             cursor.execute('UPDATE books SET author=? WHERE title=?',
                            (input("Enter the desired author : "), searchedBook,))
-            print("===============================================")
+            print("================================================================================")
             print(f"Book titled {searchedBook} is updated.")
         elif ch == "year":
             cursor.execute('UPDATE books SET year=? WHERE title=?',
                            (input("Enter the desired publishing year : "), searchedBook,))
-            print("===============================================")
+            print("================================================================================")
             print(f"Book titled {searchedBook} is updated.")
         else:
-            print("===============================================")
+            print("================================================================================")
             print("Please select from the above choices only.\nReturning back to menu.")
